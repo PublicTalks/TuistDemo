@@ -127,7 +127,7 @@ extension MicroFeature {
         let product: Product = GenerationConfig.linkType == .staticLink ? .staticFramework : .framework
 
         let resourceName: ResourceFileElements = requiredTargetTypes.hasResources(.framework) ?
-            ["\(projectPath)/Sources/Assets/**"]
+            ["\(projectPath)/Resources/**"]
             :
             []
 

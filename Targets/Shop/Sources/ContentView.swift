@@ -65,7 +65,7 @@ public struct ContentView: View {
                 }.listRowBackground(Color.clear)
             }
         }
-        .background(Image("shop").resizable().aspectRatio(contentMode: .fill).opacity(0.5))
+        .background(Image(uiImage: ShopAsset.shop.image).resizable().aspectRatio(contentMode: .fill).opacity(0.5))
         .onAppear {
             // Set the default to clear
             UITableView.appearance().backgroundColor = .clear
