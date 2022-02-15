@@ -20,8 +20,7 @@ import ProjectDescriptionHelpers
 // MARK: - Project
 
 // Creates our project using a helper function defined in ProjectDescriptionHelpers
-let project = Project.app(name: "TuistDemo",
-                          platform: .iOS,
-                          additionalTargets: ["TuistDemoKit",
-                                              "TuistDemoUI",
-                                              "Shop"])
+
+let project: Project = .merged(name: "TuistDemo",
+                               modules: Module.Constant.allFrameworks,
+                               additionalFiles: [])

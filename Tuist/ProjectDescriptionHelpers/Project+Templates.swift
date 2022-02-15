@@ -5,72 +5,68 @@ import ProjectDescription
 /// Create your own conventions, e.g: a func that makes sure all shared targets are "static frameworks"
 /// See https://docs.tuist.io/guides/helpers/
 
-extension Project {
-    /// Helper function to create the Project for this ExampleApp
-    public static func app(name: String, platform: Platform, additionalTargets: [String]) -> Project {
-        var targets = makeAppTargets(name: name,
-                                     platform: platform,
-                                     dependencies: additionalTargets.map { TargetDependency.target(name: $0) })
-        targets += additionalTargets.flatMap({ makeFrameworkTargets(name: $0, platform: platform) })
-        return Project(name: name,
-                       organizationName: "tuist.io",
-                       targets: targets)
+public extension Project {
+    static func merged(name: String, modules: [Module], additionalFiles: [FileElement]) -> Project {
+        return make(name: name, packages: modules.allPackageDescendentDependencies.map(\.package), targets: modules.allProjectTargets, additionalFiles: additionalFiles)
     }
 
-    // MARK: - Private
+    static func make(name: String, packages: [Package], targets: [Target], additionalFiles: [FileElement] = []) -> Project {
+        Project(name: name,
+                organizationName: "io.tuist",
+                packages: packages,
+                targets: targets.sorted(by: { lhs, rhs in
+                    lhs.name < rhs.name
+                }),
+                additionalFiles: additionalFiles)
+    }
+}
 
-    /// Helper function to create a framework target and an associated unit test target
-    private static func makeFrameworkTargets(name: String, platform: Platform) -> [Target] {
-        let sources = Target(name: name,
-                platform: platform,
-                product: .framework,
-                bundleId: "io.tuist.\(name)",
-                infoPlist: .default,
-                sources: ["Targets/\(name)/Sources/**"],
-                resources: [],
-                dependencies: [])
-        let tests = Target(name: "\(name)Tests",
-                platform: platform,
-                product: .unitTests,
-                bundleId: "io.tuist.\(name)Tests",
-                infoPlist: .default,
-                sources: ["Targets/\(name)/Tests/**"],
-                resources: [],
-                dependencies: [.target(name: name)])
-        return [sources, tests]
+extension Array: HasAllPackageDescendentDependency where Element == Module {
+    var allPackageDescendentDependencies: SwiftPackages {
+        reduce(into: SwiftPackages()) { partialResult, module in
+            partialResult = partialResult.union(module.allPackageDescendentDependencies)
+        }
     }
 
-    /// Helper function to create the application target and the unit test target.
-    private static func makeAppTargets(name: String, platform: Platform, dependencies: [TargetDependency]) -> [Target] {
-        let platform: Platform = platform
-        let infoPlist: [String: InfoPlist.Value] = [
-            "CFBundleShortVersionString": "1.0",
-            "CFBundleVersion": "1",
-            "UIMainStoryboardFile": "",
-            "UILaunchStoryboardName": "LaunchScreen"
-            ]
+    var allProjectTargets: [Target] {
+        let targets = reduce(into: []) { partialResult, module in
+            partialResult += module.allProjectTargets
+        }.uniques(by: \.bundleId)
 
-        let mainTarget = Target(
-            name: name,
-            platform: platform,
-            product: .app,
-            bundleId: "io.tuist.\(name)",
-            infoPlist: .extendingDefault(with: infoPlist),
-            sources: ["Targets/\(name)/Sources/**"],
-            resources: ["Targets/\(name)/Resources/**"],
-            dependencies: dependencies
-        )
+        return targets
+    }
+}
 
-        let testTarget = Target(
-            name: "\(name)Tests",
-            platform: platform,
-            product: .unitTests,
-            bundleId: "io.tuist.\(name)Tests",
-            infoPlist: .default,
-            sources: ["Targets/\(name)/Tests/**"],
-            dependencies: [
-                .target(name: "\(name)")
-        ])
-        return [mainTarget, testTarget]
+private protocol HasAllPackageDescendentDependency {
+    /// the swift packages for all targets
+    /// used by the final merged project only
+    var allPackageDescendentDependencies: SwiftPackages {
+        get
+    }
+}
+
+extension MicroFeature: HasAllPackageDescendentDependency {
+    var allPackageDescendentDependencies: SwiftPackages {
+        let types: TargetTypes = .all
+
+        let directSwiftPackages: SwiftPackages = packageDependencies(types: types)
+
+        let indirectSwiftPackages = moduleDependencies(types: types).map { (m: Module) -> SwiftPackages in
+
+            m.allPackageDescendentDependencies
+        }.joined()
+
+        return directSwiftPackages.union(SwiftPackages(indirectSwiftPackages))
+    }
+}
+
+extension Module: HasAllPackageDescendentDependency {
+    var allPackageDescendentDependencies: SwiftPackages {
+        switch self {
+        case let .uFeature(microFeature):
+            return microFeature.allPackageDescendentDependencies
+        case let .package(swiftPackage):
+            return [swiftPackage]
+        }
     }
 }
