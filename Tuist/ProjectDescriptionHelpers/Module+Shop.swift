@@ -11,8 +11,17 @@ extension Module {
     static let Shop: Module = .uFeature(name: "Shop",
                                         group: .none,
                                         targets: [
+                                            .framework: .resourcesWithModules([.Armor]),
+                                            .unitTests: .empty,
+                                            .exampleApp: .empty
+
+                                        ])
+    static let Armor: Module = .uFeature(name: "Armor",
+                                        group: .none,
+                                        targets: [
                                             .framework: .modules([]),
                                             .unitTests: .empty,
+                                          
 
                                         ])
 }

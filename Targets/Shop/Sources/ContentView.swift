@@ -7,7 +7,10 @@
 
 import SwiftUI
 
-struct ContentView: View {
+public struct ContentView: View {
+    public init() {
+        
+    }
     enum Mode {
         case weapon
         case armor
@@ -28,7 +31,7 @@ struct ContentView: View {
         }
     }
 
-    var body: some View {
+    public var body: some View {
         VStack {
             Spacer()
             Spacer()
