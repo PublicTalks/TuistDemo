@@ -2,7 +2,7 @@
 //  ContentView.swift
 //  Shared
 //
-//  Created by Lono on 2021/12/9.
+//  Created by Hai Feng Kao on 2021/12/9.
 //
 
 import SwiftUI

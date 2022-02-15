@@ -2,7 +2,7 @@
 //  Module+Shop.swift
 //  ProjectDescriptionHelpers
 //
-//  Created by Lono on 2022/2/15.
+//  Created by Hai Feng Kao on 2022/2/15.
 //
 
 import Foundation
