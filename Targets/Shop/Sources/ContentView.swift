@@ -14,7 +14,7 @@ struct ContentView: View {
     }
 
     @State var mode: Mode = .weapon
-    
+
     private var composed: ComposedItem { .init(items: [weapons[0], armors[0]]) }
     private let weapons: [Weapon] = .fake
     private let armors: [Armor] = .fake
@@ -28,7 +28,6 @@ struct ContentView: View {
         }
     }
 
-    
     var body: some View {
         VStack {
             Spacer()
@@ -68,7 +67,7 @@ struct ContentView: View {
             // Set the default to clear
             UITableView.appearance().backgroundColor = .clear
             UITableViewCell.appearance().backgroundColor = .clear
-            
+
             let allItems = weapons as [Item] + armors as [Item] + [composed]
             print("appear")
         }

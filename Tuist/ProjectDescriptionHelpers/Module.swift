@@ -70,7 +70,7 @@ public extension Module {
 
 public extension Module.Constant {
     static let allFrameworks: [Module] = [
-        
+        .Shop,
     ]
 
     static var allProjectPaths: [Path] = allFrameworks.compactMap(\.uFeature).map(\.projectPath).map {

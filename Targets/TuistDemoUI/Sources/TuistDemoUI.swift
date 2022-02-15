@@ -1,6 +1,6 @@
 import Foundation
 
-public final class TuistDemoUI {
+public enum TuistDemoUI {
     public static func hello() {
         print("Hello, from your UI framework")
     }

@@ -15,7 +15,6 @@ enum MicroFeatureGroup: String {
     case mystic = "Mystic"
 }
 
-
 @discardableResult
 func shell(_ args: [String]) -> String {
     let task = Process()
